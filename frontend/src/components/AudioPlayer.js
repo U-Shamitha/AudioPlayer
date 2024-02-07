@@ -277,8 +277,8 @@ const AudioPlayer = () => {
                       {track.name}
                   </button>
                   <FontAwesomeIcon className="fa-icon" icon={faRemove} size='lg' color={primaryColor} onClick={()=>handleRemoveSong(index)} />
-                  <FontAwesomeIcon className="fa-icon" icon={faArrowUp}  color={index>0 ? primaryColor : 'grey'} onClick={()=> index>0 && handleMoveUp(index)}/>
-                  <FontAwesomeIcon className="fa-icon" icon={faArrowDown} color={index<(filteredPlaylist.length-1) ? primaryColor : 'grey'} onClick={()=> index<(filteredPlaylist.length-1) && handleMoveDown(index)}/>
+                  <FontAwesomeIcon className="fa-icon" icon={faArrowUp}  color={index>0 ? primaryColor : 'rgba(153, 153, 153, 0.3)'} onClick={()=> index>0 && handleMoveUp(index)} style={{pointerEvents: index>0 ? 'auto' : 'none'}}/>
+                  <FontAwesomeIcon className="fa-icon" icon={faArrowDown} color={index<(filteredPlaylist.length-1) ? primaryColor : 'rgba(153, 153, 153, 0.3)'} onClick={()=> index<(filteredPlaylist.length-1) && handleMoveDown(index)} style={{pointerEvents: index<(filteredPlaylist.length-1) ? 'auto' : 'none'}}/>
               </div>
             ))}
           </div>
