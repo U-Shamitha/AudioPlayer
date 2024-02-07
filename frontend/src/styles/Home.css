@@ -1,0 +1,18 @@
+.app-container {
+    /* display: flex; */
+    overflow-x: hidden; /* Hide horizontal overflow to prevent scrolling when the sidebar is open */
+    /* padding: 20px; */
+    height: 90vh;
+  }
+  
+  .sidebar-open {
+    margin-left: 300px; 
+    transition: margin-left 0.3s ease-in-out;
+  }
+  
+  .main-content {
+    flex: 1; /* Take up the remaining space in the container */
+    padding: 20px;
+    height: 100%;
+  }
+  

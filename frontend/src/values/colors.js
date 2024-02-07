@@ -1,0 +1,1 @@
+export const primaryColor =  "rgb(58, 187, 247)";

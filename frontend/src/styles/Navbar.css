@@ -1,0 +1,27 @@
+a{
+    color: white;
+    text-decoration: none;
+    height: 70%;  
+}
+
+a:hover{
+    color: rgb(5, 117, 168);
+}
+
+.activeTab{
+    color: rgb(5, 117, 168);
+    background-color: white;
+    padding: 15px;
+    border-radius: 8px;
+    transition: padding 0.4s;
+}
+
+.nav-link-txt{
+    height:100%;
+    display:flex;
+    align-items:center;
+}
+
+#menu-icon:hover{
+    color: rgb(5, 117, 168);
+}
