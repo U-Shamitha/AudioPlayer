@@ -57,6 +57,11 @@ const AudioPlayer = () => {
     };
   }, []);
 
+  useEffect(()=>{
+    const lastPosition = JSON.parse(localStorage.getItem('lastPosition')) || 0;
+    if(audioRef.current) audioRef.current.currentTime = lastPosition ;
+  })
+
   const loadPlaylistFromDB = (db) => {
     const transaction = db.transaction(['audio_files'], 'readonly');
     const store = transaction.objectStore('audio_files');
