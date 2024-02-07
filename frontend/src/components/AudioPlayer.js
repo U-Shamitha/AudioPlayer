@@ -37,7 +37,8 @@ const AudioPlayer = () => {
   useEffect(() => {
     if (db) {
       storePlaylistInDB(db);
-    }
+      setFilteredPlaylist(selectedSongs.current.map((songIndex) => playlist[songIndex]));
+    } 
   }, [playlist]);
 
   useEffect(() => {
@@ -56,10 +57,10 @@ const AudioPlayer = () => {
     };
   }, []);
 
-  const loadPlaylistFromDB = async(db) => {
-    const transaction = await db.transaction(['audio_files'], 'readonly');
-    const store = await transaction.objectStore('audio_files');
-    const request = await store.getAll();
+  const loadPlaylistFromDB = (db) => {
+    const transaction = db.transaction(['audio_files'], 'readonly');
+    const store = transaction.objectStore('audio_files');
+    const request = store.getAll();
 
     request.onsuccess = function(event) {
       const files = event.target.result;
@@ -72,7 +73,7 @@ const AudioPlayer = () => {
       setCurrentTrackIndex(lastTrackIndex);
 
       const lastPosition = JSON.parse(localStorage.getItem('lastPosition')) || 0;
-      audioRef.current.currentTime = lastPosition;
+      if(audioRef.current) audioRef.current.currentTime = lastPosition ;
 
       setLoading(false);
 
@@ -111,15 +112,19 @@ const AudioPlayer = () => {
         const updatedPlaylist = [...playlist];
         updatedPlaylist.splice(index, 1);
         setPlaylist(updatedPlaylist);
-  
-        // Update the filteredPlaylist
-        setFilteredPlaylist(selectedSongs.current.map((songIndex) => playlist[songIndex]));
-  
+
         // Clear the store and add the updated playlist
         store.clear();
         updatedPlaylist.forEach((file) => {
           store.add(file);
         });
+
+        loadPlaylistFromDB(db);
+  
+        // Update the filteredPlaylist
+        // setFilteredPlaylist(selectedSongs.current.map((songIndex) => updatedPlaylist[songIndex]));
+
+
         
       };
     }
