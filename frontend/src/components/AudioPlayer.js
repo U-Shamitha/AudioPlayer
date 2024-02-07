@@ -64,8 +64,8 @@ const AudioPlayer = () => {
     request.onsuccess = function(event) {
       const files = event.target.result;
       setPlaylist(files);
-      if (selectedSongs.current.length<=0) selectedSongs.current = Array.from({ length: files.length }, (_, index) => index);
-      localStorage.setItem("selectedSongs", JSON.stringify(selectedSongs.current));
+      // if (selectedSongs.current.length<=0) selectedSongs.current = Array.from({ length: files.length }, (_, index) => index);
+      // localStorage.setItem("selectedSongs", JSON.stringify(selectedSongs.current));
       setFilteredPlaylist(selectedSongs.current.map((songindex)=> files[songindex]));
 
       const lastTrackIndex = JSON.parse(localStorage.getItem('currentTrackIndex')) || 0;
