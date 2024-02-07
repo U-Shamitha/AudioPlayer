@@ -37,6 +37,10 @@ const AudioPlayer = () => {
   useEffect(() => {
     if (db) {
       storePlaylistInDB(db);
+      if (selectedSongs.current.length<=0) {
+        selectedSongs.current = Array.from({ length: playlist.length }, (_, index) => index)
+      }
+
     }
   }, [playlist]);
 
@@ -65,7 +69,6 @@ const AudioPlayer = () => {
       const files = event.target.result;
       setPlaylist(files);
       if (selectedSongs.current.length<=0) selectedSongs.current = Array.from({ length: files.length }, (_, index) => index)
-      console.log(selectedSongs.current.map((songindex)=> files[songindex]))
       setFilteredPlaylist(selectedSongs.current.map((songindex)=> files[songindex]));
 
       const lastTrackIndex = JSON.parse(localStorage.getItem('currentTrackIndex')) || 0;
@@ -98,7 +101,6 @@ const AudioPlayer = () => {
       selectedSongs.current = [...selectedSongs.current, index]
       localStorage.setItem("selectedSongs", JSON.stringify(selectedSongs.current));
       setFilteredPlaylist(selectedSongs.current.map((songindex)=> playlist[songindex]));
-      // setSelctedSongs((prev)=>[...prev, index]);
     }
   }
 
