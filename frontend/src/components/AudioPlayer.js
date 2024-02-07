@@ -116,6 +116,8 @@ const AudioPlayer = () => {
         //Update last position to 0
         if(currentTrackIndex==index){
           localStorage.setItem('lastPosition', 0);
+        }else{
+          localStorage.setItem('lastPosition', JSON.stringify(audioRef.current.currentTime));
         }
         //Update currentIndex if the song deleted is before the current playing song
         if(currentTrackIndex>=index){
@@ -127,6 +129,7 @@ const AudioPlayer = () => {
           }else{
             setCurrentTrackIndex(0);
           }
+          // setIsPlaying(false);
         }
         
         // Remove the song at the specified index from the playlist
@@ -162,12 +165,17 @@ const AudioPlayer = () => {
       selectedSongs.current = [...selectedSongs.current, index]
       localStorage.setItem("selectedSongs", JSON.stringify(selectedSongs.current));
       console.log(selectedSongs.current)
+      localStorage.setItem('lastPosition', JSON.stringify(audioRef.current.currentTime));
       setFilteredPlaylist(selectedSongs.current.map((songindex)=> playlist[songindex]));
     }
   }
 
   const handleRemoveSong = (indx) => {
-    selectedSongs.current = selectedSongs.current.filter((_, index)=> index!=indx)
+    selectedSongs.current = selectedSongs.current.filter((_, index)=> index!=indx);
+    localStorage.setItem('lastPosition', JSON.stringify(audioRef.current.currentTime));
+    if(currentTrackIndex>=selectedSongs.current.length){
+      setCurrentTrackIndex((prev)=> prev-1>0 ? prev-1 : 0);
+    }
     localStorage.setItem("selectedSongs", JSON.stringify(selectedSongs.current));
     setFilteredPlaylist(selectedSongs.current.map((songindex)=> playlist[songindex]))
   }
@@ -179,11 +187,14 @@ const AudioPlayer = () => {
       selectedSongs.current[index] = temp;
       console.log(selectedSongs.current);
       localStorage.setItem("selectedSongs", JSON.stringify(selectedSongs.current));
-      
+      if(index == currentTrackIndex){
+        setCurrentTrackIndex(index-1);
+      }else if(index-1 == currentTrackIndex){
+        setCurrentTrackIndex(index);
+      }
       setFilteredPlaylist(selectedSongs.current.map((songindex)=> playlist[songindex]))
       localStorage.setItem('lastPosition', JSON.stringify(audioRef.current.currentTime));
-      setCurrentTrackIndex((prev)=> prev-1);
-    
+
   }
 
   const handleMoveDown = (index) => {
@@ -193,10 +204,13 @@ const AudioPlayer = () => {
       selectedSongs.current[index] = temp;
       console.log(selectedSongs.current);
       localStorage.setItem("selectedSongs", JSON.stringify(selectedSongs.current));
-      
+      if(index == currentTrackIndex){
+        setCurrentTrackIndex(index+1);
+      }else if(index+1 == currentTrackIndex){
+        setCurrentTrackIndex(index);
+      }
       setFilteredPlaylist(selectedSongs.current.map((songindex)=> playlist[songindex]))
       localStorage.setItem('lastPosition', JSON.stringify(audioRef.current.currentTime));
-      setCurrentTrackIndex((prev)=> prev+1);
     
   }
 
@@ -263,8 +277,8 @@ const AudioPlayer = () => {
                       {track.name}
                   </button>
                   <FontAwesomeIcon className="fa-icon" icon={faRemove} size='lg' color={primaryColor} onClick={()=>handleRemoveSong(index)} />
-                  <FontAwesomeIcon className="fa-icon" icon={faArrowUp}  color={primaryColor} onClick={()=> index>0 && handleMoveUp(index)}/>
-                  <FontAwesomeIcon className="fa-icon" icon={faArrowDown} color={primaryColor} onClick={()=> index<(filteredPlaylist.length-1) && handleMoveDown(index)} pointerEvents={index<(filteredPlaylist.length-1)}/>
+                  <FontAwesomeIcon className="fa-icon" icon={faArrowUp}  color={index>0 ? primaryColor : 'grey'} onClick={()=> index>0 && handleMoveUp(index)}/>
+                  <FontAwesomeIcon className="fa-icon" icon={faArrowDown} color={index<(filteredPlaylist.length-1) ? primaryColor : 'grey'} onClick={()=> index<(filteredPlaylist.length-1) && handleMoveDown(index)}/>
               </div>
             ))}
           </div>
