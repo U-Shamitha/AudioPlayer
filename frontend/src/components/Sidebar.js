@@ -1,7 +1,10 @@
 import styled from 'styled-components';
 import { primaryColor } from '../values/colors';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faHome } from '@fortawesome/free-solid-svg-icons';
+import { Link } from 'react-router-dom';
 
-const Sidebar=({isOpen})=>{
+const Sidebar=({isopen})=>{
 
   const StyledSideBar = styled.aside`
   background-color: white;
@@ -10,7 +13,7 @@ const Sidebar=({isOpen})=>{
   width: 300px;
   position: fixed;
   top: 61px;
-  left: ${({ isOpen }) => (isOpen ? '0' : '-300px')};
+  left: ${({ isopen }) => (isopen ? '0' : '-300px')};
   transition: left 0.3s ease-in-out;
   z-index: 999; /* Add z-index to ensure it appears above other elements */
   border-radius: 0px 8px 8px 0px;
@@ -18,10 +21,10 @@ const Sidebar=({isOpen})=>{
 `;
 
   return(
-    <StyledSideBar isopen={isOpen}>
+    <StyledSideBar isopen={isopen}>
 
-      <div style={{display:'flex', flexDirection:'column', gap:'15px'}}>
-        {/* <center><p style={{display:'flex', backgroundColor:primaryColor, padding:'10px', height:'35px', color:'white', borderRadius:'4px', margin:'20px 10px 10px 10px', justifyContent:'center', alignItems:'center'}}>Filter Products</p></center> */}
+      <div style={{display:'flex', flexDirection:'column', gap:'15px', padding:'20px'}}>
+        <Link to="/"><p style={{display:'flex', alignItems:'center', justifyContent:'center'}}><FontAwesomeIcon icon={faHome} color={primaryColor}/>&nbsp;Home</p></Link>
       </div>
 
     </StyledSideBar>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import '../styles/AudioPlayer.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowDown, faArrowUp, faRemove, faSortDown, faSortUp, faUpload } from '@fortawesome/free-solid-svg-icons';
+import { faArrowDown, faArrowUp, faRemove, faSortDown, faSortUp, faTrash, faTrashArrowUp, faTrashCan, faUpload } from '@fortawesome/free-solid-svg-icons';
 import { primaryColor } from '../values/colors';
 
 const AudioPlayer = () => {
@@ -90,6 +90,42 @@ const AudioPlayer = () => {
     });
   };
 
+  const handleDeleteSongFromDB = (index) => {
+    if (db) {
+      const transaction = db.transaction(['audio_files'], 'readwrite');
+      const store = transaction.objectStore('audio_files');
+      const request = store.getAll();
+      
+      request.onsuccess = function(event) {
+
+        // Remove the song from selectedSongs if it's present
+        selectedSongs.current = selectedSongs.current.filter((songIndex) => songIndex !== index);
+        for (const i in selectedSongs.current) {
+          if(selectedSongs.current[i]>index){
+            selectedSongs.current[i] -= 1;
+          }
+        }
+        localStorage.setItem('selectedSongs', JSON.stringify(selectedSongs.current));
+        
+        // Remove the song at the specified index from the playlist
+        const updatedPlaylist = [...playlist];
+        updatedPlaylist.splice(index, 1);
+        setPlaylist(updatedPlaylist);
+  
+        // Update the filteredPlaylist
+        setFilteredPlaylist(selectedSongs.current.map((songIndex) => playlist[songIndex]));
+  
+        // Clear the store and add the updated playlist
+        store.clear();
+        updatedPlaylist.forEach((file) => {
+          store.add(file);
+        });
+        
+      };
+    }
+  };
+  
+
   const handleFileChange = (event) => {
     const files = Array.from(event.target.files);
     setPlaylist([...playlist, ...files]);
@@ -154,11 +190,12 @@ const AudioPlayer = () => {
           <input id="song" type="file" accept=".mp3" onChange={handleFileChange} multiple style={{display:'none'}}/>
         </div>
         <div>
-          <h2>Song List</h2>
+          <h2>Song List <br/><span style={{fontSize:'12px', color:'grey'}}>Click on song to add it to playlist</span></h2>
           <div className="playlist">
             {playlist.map((track, index) => (
               <div key={index} style={{display:'flex', justifyContent:'space-between', alignItems:'center', gap:'15px'}}>
-                <button onClick={() => handleAddSong(index)}>{track.name}</button>
+                <button onClick={() => handleAddSong(index)} title='Add to playlist'>{track.name}</button>
+                <FontAwesomeIcon className="fa-icon" icon={faTrash} color={primaryColor} onClick={()=>handleDeleteSongFromDB(index)} />
               </div>
             ))}
           </div>
@@ -189,12 +226,12 @@ const AudioPlayer = () => {
             {console.log(filteredPlaylist)}
             {filteredPlaylist.length>0 && filteredPlaylist.map((track, index) => (
               <div  key={index} style={{display:'flex', justifyContent:'space-between', alignItems:'center', gap:'15px'}}>
-                  <button onClick={() => handlePlay(index)} className={`${currentTrackIndex===selectedSongs.current[index] && 'activeSong'}`}>
+                  <button onClick={() => handlePlay(index)} className={`${currentTrackIndex===selectedSongs.current[index] && 'activeSong'}`} title='Play Song'>
                       {track.name}
                   </button>
                   <FontAwesomeIcon className="fa-icon" icon={faRemove} size='lg' color={primaryColor} onClick={()=>handleRemoveSong(index)} />
                   <FontAwesomeIcon className="fa-icon" icon={faArrowUp}  color={primaryColor} onClick={()=> index>0 && handleMoveUp(index)}/>
-                  <FontAwesomeIcon className="fa-icon" icon={faArrowDown} color={primaryColor} onClick={()=> index<(filteredPlaylist.length-1) && handleMoveDown(index)}/>
+                  <FontAwesomeIcon className="fa-icon" icon={faArrowDown} color={primaryColor} onClick={()=> index<(filteredPlaylist.length-1) && handleMoveDown(index)} pointerEvents={index<(filteredPlaylist.length-1)}/>
               </div>
             ))}
           </div>
