@@ -114,7 +114,7 @@ const AudioPlayer = () => {
         localStorage.setItem('selectedSongs', JSON.stringify(selectedSongs.current));
 
         //Update last position to 0
-        if(currentTrackIndex==index){
+        if(selectedSongs.current[currentTrackIndex]==index){
           localStorage.setItem('lastPosition', 0);
         }else{
           localStorage.setItem('lastPosition', JSON.stringify(audioRef.current.currentTime));
@@ -172,7 +172,11 @@ const AudioPlayer = () => {
 
   const handleRemoveSong = (indx) => {
     selectedSongs.current = selectedSongs.current.filter((_, index)=> index!=indx);
-    localStorage.setItem('lastPosition', JSON.stringify(audioRef.current.currentTime));
+    if(currentTrackIndex==indx){
+      localStorage.setItem('lastPosition', 0);
+    }else{
+      localStorage.setItem('lastPosition', JSON.stringify(audioRef.current.currentTime));
+    }
     if(currentTrackIndex>=selectedSongs.current.length){
       setCurrentTrackIndex((prev)=> prev-1>0 ? prev-1 : 0);
     }
@@ -236,7 +240,7 @@ const AudioPlayer = () => {
           <input id="song" type="file" accept=".mp3" onChange={handleFileChange} multiple style={{display:'none'}}/>
         </div>
         <div>
-          <h2>Song List <br/><span style={{fontSize:'12px', color:'grey'}}>Click on song to add it to playlist</span></h2>
+          <h2 style={{padding:'20px'}} >Song List <br/><span style={{fontSize:'12px', color:'grey'}}>Click on song to add it to playlist</span></h2>
           <div className="playlist">
             {playlist.map((track, index) => (
               <div key={index} style={{display:'flex', justifyContent:'space-between', alignItems:'center', gap:'15px'}}>
@@ -251,7 +255,7 @@ const AudioPlayer = () => {
       {playlist.length > 0 &&(
         <div  className="audio-player-container">
           {/* {console.log(playlist[selectedSongs.current[currentTrackIndex]])} */}
-          <h2>Now Playing</h2>
+          <h2 style={{padding:'20px'}}>Now Playing</h2>
           <audio 
             ref={audioRef}
             controls
