@@ -7,12 +7,12 @@ import { primaryColor } from '../values/colors';
 const AudioPlayer = () => {
   const [playlist, setPlaylist] = useState([]);
   let selectedSongs = useRef(localStorage.getItem('selectedSongs')? JSON.parse(localStorage.getItem('selectedSongs')):[]);
-  const [filteredPlaylist, setFilteredPlaylist] = useState(playlist);
+  const [filteredPlaylist, setFilteredPlaylist] = useState([]);
   const [currentTrackIndex, setCurrentTrackIndex] = useState(JSON.parse(localStorage.getItem('currentTrackIndex'))||0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [db, setDB] = useState(null);
   const audioRef = useRef(new Audio());
-  const [playStarted, setPlayStarted] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   console.log(selectedSongs.current);
 
@@ -37,10 +37,6 @@ const AudioPlayer = () => {
   useEffect(() => {
     if (db) {
       storePlaylistInDB(db);
-      if (selectedSongs.current.length<=0) {
-        selectedSongs.current = Array.from({ length: playlist.length }, (_, index) => index)
-      }
-
     }
   }, [playlist]);
 
@@ -60,15 +56,16 @@ const AudioPlayer = () => {
     };
   }, []);
 
-  const loadPlaylistFromDB = (db) => {
-    const transaction = db.transaction(['audio_files'], 'readonly');
-    const store = transaction.objectStore('audio_files');
-    const request = store.getAll();
+  const loadPlaylistFromDB = async(db) => {
+    const transaction = await db.transaction(['audio_files'], 'readonly');
+    const store = await transaction.objectStore('audio_files');
+    const request = await store.getAll();
 
     request.onsuccess = function(event) {
       const files = event.target.result;
       setPlaylist(files);
-      if (selectedSongs.current.length<=0) selectedSongs.current = Array.from({ length: files.length }, (_, index) => index)
+      if (selectedSongs.current.length<=0) selectedSongs.current = Array.from({ length: files.length }, (_, index) => index);
+      localStorage.setItem("selectedSongs", JSON.stringify(selectedSongs.current));
       setFilteredPlaylist(selectedSongs.current.map((songindex)=> files[songindex]));
 
       const lastTrackIndex = JSON.parse(localStorage.getItem('currentTrackIndex')) || 0;
@@ -76,6 +73,8 @@ const AudioPlayer = () => {
 
       const lastPosition = JSON.parse(localStorage.getItem('lastPosition')) || 0;
       audioRef.current.currentTime = lastPosition;
+
+      setLoading(false);
 
     };
   };
@@ -100,6 +99,7 @@ const AudioPlayer = () => {
     if(!selectedSongs.current.includes(index)){
       selectedSongs.current = [...selectedSongs.current, index]
       localStorage.setItem("selectedSongs", JSON.stringify(selectedSongs.current));
+      console.log(selectedSongs.current)
       setFilteredPlaylist(selectedSongs.current.map((songindex)=> playlist[songindex]));
     }
   }
@@ -164,14 +164,15 @@ const AudioPlayer = () => {
           </div>
       </div>
     
-      {playlist.length > 0 && (
+      {playlist.length > 0 &&(
         <div  className="audio-player-container">
+          {console.log(playlist[selectedSongs.current[currentTrackIndex]])}
           <h2>Now Playing</h2>
           <audio 
             ref={audioRef}
             controls
             autoPlay={isPlaying} 
-            src={selectedSongs.current[currentTrackIndex] ? URL.createObjectURL(playlist[selectedSongs.current[currentTrackIndex]]) : ''}
+            src={playlist[selectedSongs.current[currentTrackIndex]] ? URL.createObjectURL(playlist[selectedSongs.current[currentTrackIndex]]) : ''}
             onPause={()=> 
               {
                 console.log('lastPosition', audioRef.current.currentTime);
@@ -184,7 +185,8 @@ const AudioPlayer = () => {
             }}
           />
           <div  className="playlist">
-            {filteredPlaylist.map((track, index) => (
+            {console.log(filteredPlaylist)}
+            {filteredPlaylist.length>0 && filteredPlaylist.map((track, index) => (
               <div  key={index} style={{display:'flex', justifyContent:'space-between', alignItems:'center', gap:'15px'}}>
                   <button onClick={() => handlePlay(index)} className={`${currentTrackIndex===selectedSongs.current[index] && 'activeSong'}`}>
                       {track.name}
