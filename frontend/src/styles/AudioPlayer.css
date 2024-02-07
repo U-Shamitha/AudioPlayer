@@ -60,11 +60,15 @@
     box-shadow: 2px 2px 4px rgb(56, 55, 55, 0.2);
 }
 
-.activeSong, .playlist button:hover {
+.playlist button:hover {
     background-color: #0056b3;
     transition: background-color 0.3s ease-in-out;
 }
 
+.activeSong{
+    background-color: #0056b3 !important;
+    transition: background-color 0.3s ease-in-out;
+}
 
 
 .fa-icon{

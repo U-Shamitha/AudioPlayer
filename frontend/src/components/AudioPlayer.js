@@ -112,6 +112,22 @@ const AudioPlayer = () => {
           }
         }
         localStorage.setItem('selectedSongs', JSON.stringify(selectedSongs.current));
+
+        //Update last position to 0
+        if(currentTrackIndex==index){
+          localStorage.setItem('lastPosition', 0);
+        }
+        //Update currentIndex if the song deleted is before the current playing song
+        if(currentTrackIndex>=index){
+          if(selectedSongs.current.length>0){
+            if(currentTrackIndex>=selectedSongs.current.length) 
+            {
+              setCurrentTrackIndex(currentTrackIndex-1);
+            };
+          }else{
+            setCurrentTrackIndex(0);
+          }
+        }
         
         // Remove the song at the specified index from the playlist
         const updatedPlaylist = [...playlist];
@@ -165,6 +181,8 @@ const AudioPlayer = () => {
       localStorage.setItem("selectedSongs", JSON.stringify(selectedSongs.current));
       
       setFilteredPlaylist(selectedSongs.current.map((songindex)=> playlist[songindex]))
+      localStorage.setItem('lastPosition', JSON.stringify(audioRef.current.currentTime));
+      setCurrentTrackIndex((prev)=> prev-1);
     
   }
 
@@ -177,17 +195,21 @@ const AudioPlayer = () => {
       localStorage.setItem("selectedSongs", JSON.stringify(selectedSongs.current));
       
       setFilteredPlaylist(selectedSongs.current.map((songindex)=> playlist[songindex]))
+      localStorage.setItem('lastPosition', JSON.stringify(audioRef.current.currentTime));
+      setCurrentTrackIndex((prev)=> prev+1);
     
   }
 
 
   const handlePlay = (index) => {
     setCurrentTrackIndex(index);
+    localStorage.setItem('lastPosition', 0);
     setIsPlaying(true);
   };
 
   const handleTrackEnded = () => {
     console.log("Track ended",  (currentTrackIndex + 1) % (selectedSongs.current.length));
+    localStorage.setItem('lastPosition', 0);
     setCurrentTrackIndex((currentTrackIndex + 1) % (selectedSongs.current.length));
     setIsPlaying(true);
   };
@@ -214,7 +236,7 @@ const AudioPlayer = () => {
     
       {playlist.length > 0 &&(
         <div  className="audio-player-container">
-          {console.log(playlist[selectedSongs.current[currentTrackIndex]])}
+          {/* {console.log(playlist[selectedSongs.current[currentTrackIndex]])} */}
           <h2>Now Playing</h2>
           <audio 
             ref={audioRef}
@@ -233,10 +255,11 @@ const AudioPlayer = () => {
             }}
           />
           <div  className="playlist">
-            {console.log(filteredPlaylist)}
             {filteredPlaylist.length>0 && filteredPlaylist.map((track, index) => (
               <div  key={index} style={{display:'flex', justifyContent:'space-between', alignItems:'center', gap:'15px'}}>
-                  <button onClick={() => handlePlay(index)} className={`${currentTrackIndex===selectedSongs.current[index] && 'activeSong'}`} title='Play Song'>
+                {console.log('currentTrackIndex', currentTrackIndex)}
+                {console.log('index', index)}
+                  <button onClick={() => handlePlay(index)} className={`${currentTrackIndex==index ? 'activeSong' : ''}`} title='Play Song'>
                       {track.name}
                   </button>
                   <FontAwesomeIcon className="fa-icon" icon={faRemove} size='lg' color={primaryColor} onClick={()=>handleRemoveSong(index)} />
