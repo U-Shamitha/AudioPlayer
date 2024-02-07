@@ -104,6 +104,13 @@ const AudioPlayer = () => {
       
       request.onsuccess = function(event) {
 
+        //Update last position to 0
+        if(selectedSongs.current[currentTrackIndex]==index){
+          localStorage.setItem('lastPosition', 0);
+        }else{
+          localStorage.setItem('lastPosition', JSON.stringify(audioRef.current.currentTime));
+        }
+
         // Remove the song from selectedSongs if it's present
         selectedSongs.current = selectedSongs.current.filter((songIndex) => songIndex !== index);
         for (const i in selectedSongs.current) {
@@ -113,12 +120,6 @@ const AudioPlayer = () => {
         }
         localStorage.setItem('selectedSongs', JSON.stringify(selectedSongs.current));
 
-        //Update last position to 0
-        if(selectedSongs.current[currentTrackIndex]==index){
-          localStorage.setItem('lastPosition', 0);
-        }else{
-          localStorage.setItem('lastPosition', JSON.stringify(audioRef.current.currentTime));
-        }
         //Update currentIndex if the song deleted is before the current playing song
         if(currentTrackIndex>=index){
           if(selectedSongs.current.length>0){
