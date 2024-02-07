@@ -169,7 +169,7 @@ const AudioPlayer = () => {
             ref={audioRef}
             controls
             autoPlay={isPlaying} 
-            src={URL.createObjectURL(playlist[selectedSongs.current[currentTrackIndex]])}
+            src={selectedSongs.current[currentTrackIndex] && URL.createObjectURL(playlist[selectedSongs.current[currentTrackIndex]])}
             onPause={()=> 
               {
                 console.log('lastPosition', audioRef.current.currentTime);

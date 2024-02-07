@@ -30,9 +30,9 @@ const Navbar = ({toggleSidebar}) =>{
         <StyledNav>
             <div style={{display:'flex', gap:'40px', height:'60px', alignItems:'center', margin:'0px'}}>
                 <FontAwesomeIcon icon={faBars}  onClick={toggleSidebar} size='lg' style={{padding:'10px'}} id="menu-icon"/>
-                <Link to="/home" className={activeTab==="home" ? 'activeTab':''}><p className='nav-link-txt'>Home</p></Link>
+                <Link to="/" className={activeTab==="home" ? 'activeTab':''}><p className='nav-link-txt'>Home</p></Link>
             </div>
-            <Link to="/"><p className='nav-link-txt'>E COMMERCE</p></Link>
+            <Link to="/"><p className='nav-link-txt'>AUDIO PLAYER</p></Link>
         </StyledNav>
     )
 }
